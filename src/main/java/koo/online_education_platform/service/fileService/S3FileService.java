@@ -88,7 +88,6 @@ public class S3FileService implements FileService {
     }
 
     // byte 배열 타입을 return 한다.
-
     @Override
     public ResponseEntity<byte[]> getObject(String fileDir, String fileName) throws IOException {
         // bucket 와 fileDir 을 사용해서 S3 에 있는 객체 - object - 를 가져온다.
@@ -98,10 +97,10 @@ public class S3FileService implements FileService {
         S3ObjectInputStream objectInputStream = object.getObjectContent();
 
         // 이후 다시 byte 배열 형태로 변환한다.
-        // 아마도 파일 다운로드를 위해서는 byte 형태로 변환할 필요가 있어서 그런듯하다
+        // (아마도 파일 다운로드를 위해서는 byte 형태로 변환할 필요가 있어서 그런듯하다.)
         byte[] bytes = IOUtils.toByteArray(objectInputStream);
 
-        // 여기는 httpHeader 에 파일 다운로드 요청을 하기 위한내용
+        // 응답 http 메시지의 Header에 응답으로 내려갈 데이터의 타입을 지정 하기 위한내용
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 

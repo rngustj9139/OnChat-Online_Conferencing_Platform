@@ -34,6 +34,7 @@ public interface FileService {
         file.delete();
     }
 
+    // 파일 다운로드
     ResponseEntity<byte[]> getObject(String fileDir, String fileName) throws IOException;
 
 }
