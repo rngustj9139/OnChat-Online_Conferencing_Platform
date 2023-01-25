@@ -217,6 +217,11 @@ usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
 
 /// 파일 업로드 부분 ////
+/**
+ * - 먼저 파일 업로드가 실행되면 /s3/uplaod 로 파일 업로드 요청이 가게된다. 업로드 요청이 성공 - 서버 업로드가 성공 - 하면 서버로부터 data 에 관련 내용을 받고, data 로 넘어온 내용 중 필요한 부분만 chatMessage 에 담아서 다시 서버에 보내게 된다.
+ * - chatMessage 로 넘어온 내용을 클라이언트에 뿌려주는데 이때 chatMessage 안에 s3DataUrl 내용이 null 이 아니라면 채팅에서 파일 업로드가 있는 것으로 간주하고, 채팅창에 파일을 보여주게 된다.
+ * - 업로드된 파일 옆에는 다운로드 버튼을 만들어두었고, 다운로드 버튼을 누르면 /s3/download 로 요청을 하게 된다. 이후 서버로부터 responseEntity 객체를 받게 되고 이를 이용해서 파일 다운로드가 진행된다.
+ */
 function uploadFile(){
     var file = $("#file")[0].files[0];
     var formData = new FormData();

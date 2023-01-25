@@ -42,7 +42,6 @@ public class S3FileService implements FileService {
     @Override
     public FileUploadDto uploadFile(MultipartFile file, String transaction, String roomId) {
         try{
-
             String filename = file.getOriginalFilename(); // 파일원본 이름
             String key = roomId + "/" + transaction + "/" + filename; // S3 파일 경로
 
