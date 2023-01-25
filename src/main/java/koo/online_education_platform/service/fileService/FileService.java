@@ -1,4 +1,4 @@
-package koo.online_education_platform.service.service;
+package koo.online_education_platform.service.fileService;
 
 import koo.online_education_platform.dto.FileUploadDto;
 import org.springframework.http.ResponseEntity;
