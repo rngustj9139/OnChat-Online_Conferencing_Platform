@@ -1,7 +1,6 @@
 package koo.online_education_platform.repository;
 
-import koo.online_education_platform.dto.ChatRoom;
-import koo.online_education_platform.dto.ChatRoomDto;
+import koo.online_education_platform.entity.ChatRoom;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -76,9 +75,9 @@ public class ChatRepository {
         // 만약 userName 이 중복이라면 랜덤한 숫자를 붙임
         // 이때 랜덤한 숫자를 붙였을 때 getUserlist 안에 있는 닉네임이라면 다시 랜덤한 숫자 붙이기!
         while(room.getUserlist().containsValue(tmp)){
-            int ranNum = (int) (Math.random()*100)+1;
+            int ranNum = (int) (Math.random() * 100) + 1;
 
-            tmp = username+ranNum;
+            tmp = username + ranNum;
         }
 
         return tmp;
@@ -105,6 +104,7 @@ public class ChatRepository {
         // hashmap 을 for 문을 돌린 후
         // value 값만 뽑아내서 list 에 저장 후 reutrn
         room.getUserlist().forEach((key, value) -> list.add(value));
+
         return list;
     }
 

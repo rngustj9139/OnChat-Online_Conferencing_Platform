@@ -1,4 +1,4 @@
-package koo.online_education_platform.dto;
+package koo.online_education_platform.entity;
 
 import lombok.Data;
 
