@@ -75,7 +75,7 @@ public class ChatRepository {
 
         // 만약 userName 이 중복이라면 랜덤한 숫자를 붙임
         // 이때 랜덤한 숫자를 붙였을 때 getUserlist 안에 있는 닉네임이라면 다시 랜덤한 숫자 붙이기!
-        while(room.getUserlist().containsValue(tmp)){
+        while (room.getUserlist().containsValue(tmp)) {
             int ranNum = (int) (Math.random() * 100) + 1;
 
             tmp = username + ranNum;
