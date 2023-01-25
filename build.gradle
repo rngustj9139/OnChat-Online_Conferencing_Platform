@@ -32,6 +32,8 @@ dependencies {
 	implementation 'org.webjars:stomp-websocket:2.3.4'
 	// gson(json 구조의 데이터를 java의 객체로 변환)
 	implementation 'com.google.code.gson:gson:2.9.0'
+	// aws s3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.1.RELEASE'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
