@@ -13,6 +13,7 @@ import java.util.*;
 @Repository
 @Slf4j
 public class ChatRepository {
+
     private Map<String, ChatRoom> chatRoomMap;
 
     @PostConstruct
@@ -47,13 +48,13 @@ public class ChatRepository {
     // 채팅방 인원+1
     public void plusUserCnt(String roomId){
         ChatRoom room = chatRoomMap.get(roomId);
-        room.setUserCount(room.getUserCount()+1);
+        room.setUserCount(room.getUserCount() + 1);
     }
 
     // 채팅방 인원-1
     public void minusUserCnt(String roomId){
         ChatRoom room = chatRoomMap.get(roomId);
-        room.setUserCount(room.getUserCount()-1);
+        room.setUserCount(room.getUserCount() - 1);
     }
 
     // 채팅방 유저 리스트에 유저 추가
