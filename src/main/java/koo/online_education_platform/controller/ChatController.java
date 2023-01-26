@@ -41,7 +41,6 @@ public class ChatController {
     // 처리가 완료되면 /sub/chat/room/roomId 로 메시지가 전송된다.
     @MessageMapping("/chat/enterUser")
     public void enterUser(@Payload ChatDto chat, SimpMessageHeaderAccessor headerAccessor) {
-
         // 채팅방 유저+1
         repository.plusUserCnt(chat.getRoomId());
 
@@ -102,7 +101,6 @@ public class ChatController {
     @GetMapping("/chat/userlist")
     @ResponseBody
     public ArrayList<String> userList(String roomId) {
-
         return repository.getUserList(roomId);
     }
 
@@ -110,7 +108,6 @@ public class ChatController {
     @GetMapping("/chat/duplicateName")
     @ResponseBody
     public String isDuplicateName(@RequestParam("roomId") String roomId, @RequestParam("username") String username) {
-
         // 유저 이름 확인
         String userName = repository.isDuplicateName(roomId, username);
         log.info("동작확인 {}", userName);

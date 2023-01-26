@@ -1,5 +1,6 @@
 package koo.online_education_platform.config;
 
+import koo.online_education_platform.service.social.PrincipalOauth2UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

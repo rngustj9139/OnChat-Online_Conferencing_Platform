@@ -141,7 +141,7 @@ public class ChatRepository {
 
     // 채팅방 비밀번호 조회
     public boolean confirmPwd(String roomId, String roomPwd) {
-//        String pwd = chatRoomMap.get(roomId).getRoomPwd();
+        // String pwd = chatRoomMap.get(roomId).getRoomPwd();
 
         return roomPwd.equals(chatRoomMap.get(roomId).getRoomPwd());
     }
@@ -156,7 +156,6 @@ public class ChatRepository {
             fileService.deleteFileDir(roomId);
 
             log.info("삭제 완료 roomId : {}", roomId);
-
         } catch (Exception e) { // 만약에 예외 발생시 확인하기 위해서 try catch
             System.out.println(e.getMessage());
         }
