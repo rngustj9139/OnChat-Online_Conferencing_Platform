@@ -34,8 +34,8 @@ public class ChatRoomController {
     // 채팅방 생성
     // 채팅방 생성 후 다시 / 로 redirect
     @PostMapping("/chat/createroom")
-    public String createRoom(@RequestParam String name, RedirectAttributes rttr) {
-        ChatRoom room = chatRepository.createChatRoom(name);
+    public String createRoom(@RequestParam String roomName, RedirectAttributes rttr) {
+        ChatRoom room = chatRepository.createChatRoom(roomName);
         log.info("CREATE Chat Room {}", room);
         rttr.addFlashAttribute("roomName", room);
 

@@ -225,7 +225,7 @@ messageForm.addEventListener('submit', sendMessage, true)
 function uploadFile(){
     var file = $("#file")[0].files[0];
     var formData = new FormData();
-    formData.append("file",file);
+    formData.append("file", file);
     formData.append("roomId", roomId);
 
     // 확장자 추출
