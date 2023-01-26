@@ -1,5 +1,6 @@
-package koo.online_education_platform.entity;
+package koo.online_education_platform.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -11,20 +12,15 @@ import java.util.UUID;
  * - 메시지를 다른 세션의 클라이언트에게 발송하는 것도 구현 필요가 없다!
  */
 @Data
-public class ChatRoom {
+@Builder
+public class ChatRoomDto {
 
     private String roomId; // 채팅방 아이디
     private String roomName; // 채팅방 이름
-    private long userCount; // 채팅방 인원수
-
-    private HashMap<String, String> userlist = new HashMap<String, String>();
-
-    public ChatRoom create(String roomName){
-        ChatRoom chatRoom = new ChatRoom();
-        chatRoom.roomId = UUID.randomUUID().toString();
-        chatRoom.roomName = roomName;
-
-        return chatRoom;
-    }
+    private int userCount; // 채팅방 인원수
+    private int maxUserCnt; // 채팅방 최대 인원 제한
+    private String roomPwd; // 채팅방 삭제시 필요한 pwd
+    private boolean secretChk; // 채팅방 잠금 여부
+    private HashMap<String, String> userlist; // <userUUID, userName>
 
 }

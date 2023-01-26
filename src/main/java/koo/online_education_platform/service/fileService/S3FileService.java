@@ -28,8 +28,11 @@ import java.io.IOException;
 @Slf4j
 public class S3FileService implements FileService {
 
+    // AmazonS3 주입받기(client)
     private final AmazonS3 amazonS3;
 
+    // application.properties 에 설정한 변수들을 가져와서 사용할 수 있게 함
+    // S3 bucket 이름
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
@@ -37,6 +40,7 @@ public class S3FileService implements FileService {
     @Value("${cloud.aws.s3.bucket.url}")
     private String baseUrl;
 
+    // 파일 업로드
     // MultipartFile 과 transcation, roomId 를 전달받는다.
     // 이때 transcation 는 파일 이름 중복 방지를 위한 UUID 를 의미한다.
     @Override
@@ -46,7 +50,7 @@ public class S3FileService implements FileService {
             String key = roomId + "/" + transaction + "/" + filename; // S3 파일 경로
 
             // 매개변수로 넘어온 multipartFile 을 File 객체로 변환 시켜서 저장하기 위한 메서드
-            File convertedFile = convertMultipartFileToFile(file, transaction + filename); // (경로, 저장파일이름)
+            File convertedFile = convertMultipartFileToFile(file, transaction + filename);
 
             // 아마존 S3 에 파일 업로드를 위해 사용하는 TransferManagerBuilder
             TransferManager transferManager = TransferManagerBuilder
@@ -67,25 +71,29 @@ public class S3FileService implements FileService {
                     .chatRoom(roomId)
                     .originFileName(filename)
                     .fileDir(key)
-                    .s3DataUrl(baseUrl+"/" + key)
+                    .s3DataUrl(baseUrl+"/"+key)
                     .build();
 
             // uploadDTO 객체 리턴
             return uploadReq;
+
         } catch (Exception e) {
             log.error("fileUploadException {}", e.getMessage());
-
             return null;
         }
     }
 
+    // 채팅방 삭제시 path 아래있는 모든 파일을 삭제한다.
+    // 이때 path 는 roomId 가 된다 => S3 에 roomId/변경된 파일명(uuid)/원본 파일명 으로 되어있기 때문에
+    // roomId 를 적어주면 기준이 되는 roomId 아래의 모든 파일이 삭제된다.
     @Override
-    public void deleteFileDir(String path) {
+    public void deleteFileDir(String path) { // path는 roomId
         for (S3ObjectSummary summary : amazonS3.listObjects(bucket, path).getObjectSummaries()) {
             amazonS3.deleteObject(bucket, summary.getKey());
         }
     }
 
+    // 파일 다운로드
     // byte 배열 타입을 return 한다.
     @Override
     public ResponseEntity<byte[]> getObject(String fileDir, String fileName) throws IOException {
@@ -96,10 +104,10 @@ public class S3FileService implements FileService {
         S3ObjectInputStream objectInputStream = object.getObjectContent();
 
         // 이후 다시 byte 배열 형태로 변환한다.
-        // (아마도 파일 다운로드를 위해서는 byte 형태로 변환할 필요가 있어서 그런듯하다.)
+        // 아마도 파일 전송을 위해서는 다시 byte[] 즉, binary 로 변환해서 전달해야햐기 때문
         byte[] bytes = IOUtils.toByteArray(objectInputStream);
 
-        // 응답 http 메시지의 Header에 응답으로 내려갈 데이터의 타입을 지정 하기 위한내용
+        // 여기는 httpHeader 에 파일 다운로드 요청을 하기 위한내용
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 

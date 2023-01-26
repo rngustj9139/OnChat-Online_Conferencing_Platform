@@ -29,6 +29,8 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class ChatController {
 
+    // 아래에서 사용되는 convertAndSend 를 사용하기 위해서 서언
+    // convertAndSend 는 객체를 인자로 넘겨주면 자동으로 Message 객체로 변환 후 도착지로 전송한다.
     private final SimpMessageSendingOperations template;
 
     @Autowired
@@ -38,23 +40,25 @@ public class ChatController {
     // 이때 클라이언트에서는 /pub/chat/message 로 요청하게 되고 이것을 controller 가 받아서 처리한다.
     // 처리가 완료되면 /sub/chat/room/roomId 로 메시지가 전송된다.
     @MessageMapping("/chat/enterUser")
-    public void enterUser(@Payload ChatDto chat, SimpMessageHeaderAccessor headerAccessor) { // 유저 입장
+    public void enterUser(@Payload ChatDto chat, SimpMessageHeaderAccessor headerAccessor) {
+
         // 채팅방 유저+1
         repository.plusUserCnt(chat.getRoomId());
 
         // 채팅방에 유저 추가 및 UserUUID 반환
         String userUUID = repository.addUser(chat.getRoomId(), chat.getSender());
 
-        // 반환 결과를 stomp session 에 userUUID 로 저장
+        // 반환 결과를 socket session 에 userUUID 로 저장
         headerAccessor.getSessionAttributes().put("userUUID", userUUID);
         headerAccessor.getSessionAttributes().put("roomId", chat.getRoomId());
 
-        chat.setMessage(chat.getSender() + " 님이 입장 하였습니다.");
+        chat.setMessage(chat.getSender() + " 님 입장!!");
         template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
     }
 
+    // 해당 유저
     @MessageMapping("/chat/sendMessage")
-    public void sendMessage(@Payload ChatDto chat) { // 유저가 메세지 송신
+    public void sendMessage(@Payload ChatDto chat) {
         log.info("CHAT {}", chat);
         chat.setMessage(chat.getMessage());
         template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
@@ -62,7 +66,7 @@ public class ChatController {
 
     // 유저 퇴장 시에는 EventListener 을 통해서 유저 퇴장을 확인
     @EventListener
-    public void webSocketDisconnectListener(SessionDisconnectEvent event) { // 유저 퇴장
+    public void webSocketDisconnectListener(SessionDisconnectEvent event) {
         log.info("DisConnEvent {}", event);
 
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
@@ -98,6 +102,7 @@ public class ChatController {
     @GetMapping("/chat/userlist")
     @ResponseBody
     public ArrayList<String> userList(String roomId) {
+
         return repository.getUserList(roomId);
     }
 
@@ -105,6 +110,7 @@ public class ChatController {
     @GetMapping("/chat/duplicateName")
     @ResponseBody
     public String isDuplicateName(@RequestParam("roomId") String roomId, @RequestParam("username") String username) {
+
         // 유저 이름 확인
         String userName = repository.isDuplicateName(roomId, username);
         log.info("동작확인 {}", userName);

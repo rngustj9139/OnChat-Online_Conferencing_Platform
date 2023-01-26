@@ -28,4 +28,9 @@ public class ChatDto {
     private String message; // 메시지
     private String time; // 채팅 발송 시간
 
+    /* 파일 업로드 관련 변수 */
+    private String s3DataUrl; // 파일 업로드 url
+    private String fileName; // 파일이름
+    private String fileDir; // s3 파일 경로
+
 }
