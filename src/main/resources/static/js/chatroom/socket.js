@@ -6,7 +6,6 @@ document.write("<script\n" +
     "  integrity=\"sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=\"\n" +
     "  crossorigin=\"anonymous\"></script>")
 
-
 var usernamePage = document.querySelector('#username-page');
 var chatPage = document.querySelector('#chat-page');
 var usernameForm = document.querySelector('#usernameForm');
@@ -46,12 +45,9 @@ function connect(event) {
 
 
     event.preventDefault();
-
-
 }
 
 function onConnected() {
-
     // sub 할 url => /sub/chat/room/roomId 로 구독한다
     stompClient.subscribe('/sub/chat/room/' + roomId, onMessageReceived);
 
@@ -67,7 +63,6 @@ function onConnected() {
     )
 
     connectingElement.classList.add('hidden');
-
 }
 
 // 유저 닉네임 중복 확인
@@ -86,7 +81,6 @@ function isDuplicateName() {
             username = data;
         }
     })
-
 }
 
 // 유저 리스트 받기
@@ -110,7 +104,6 @@ function getUserList() {
         }
     })
 }
-
 
 function onError(error) {
     connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
@@ -202,7 +195,6 @@ function onMessageReceived(payload) {
     messageArea.scrollTop = messageArea.scrollHeight;
 }
 
-
 function getAvatarColor(messageSender) {
     var hash = 0;
     for (var i = 0; i < messageSender.length; i++) {
@@ -217,29 +209,11 @@ usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
 
 /// 파일 업로드 부분 ////
-/**
- * - 먼저 파일 업로드가 실행되면 /s3/uplaod 로 파일 업로드 요청이 가게된다. 업로드 요청이 성공 - 서버 업로드가 성공 - 하면 서버로부터 data 에 관련 내용을 받고, data 로 넘어온 내용 중 필요한 부분만 chatMessage 에 담아서 다시 서버에 보내게 된다.
- * - chatMessage 로 넘어온 내용을 클라이언트에 뿌려주는데 이때 chatMessage 안에 s3DataUrl 내용이 null 이 아니라면 채팅에서 파일 업로드가 있는 것으로 간주하고, 채팅창에 파일을 보여주게 된다.
- * - 업로드된 파일 옆에는 다운로드 버튼을 만들어두었고, 다운로드 버튼을 누르면 /s3/download 로 요청을 하게 된다. 이후 서버로부터 responseEntity 객체를 받게 되고 이를 이용해서 파일 다운로드가 진행된다.
- */
 function uploadFile(){
     var file = $("#file")[0].files[0];
     var formData = new FormData();
     formData.append("file", file);
     formData.append("roomId", roomId);
-
-    // 확장자 추출
-    var fileDot = file.name.lastIndexOf(".");
-
-    // 확장자 검사
-    var fileType = file.name.substring(fileDot + 1, file.name.length);
-    // console.log("type : " + fileType);
-
-    if (!(fileType == "png" || fileType == "jpg" || fileType == "jpeg" || fileType == "gif"))
-    {
-        alert("파일 업로드는 png, jpg, gif, jpeg 만 가능합니다");
-        return;
-    }
 
     // ajax 로 multipart/form-data 를 넘겨줄 때는
     //         processData: false,
@@ -279,15 +253,15 @@ function uploadFile(){
 
 // 파일 다운로드 부분 //
 // 버튼을 누르면 downloadFile 메서드가 실행됨
-// 다운로드 url 은 /s3/download+원본파일이름
+// 다운로드 url 은 /s3/download + 원본파일이름
 function downloadFile(name, dir){
-    // console.log("파일 이름 : "+name);
+    // console.log("파일 이름 : " + name);
     // console.log("파일 경로 : " + dir);
-    let url = "/s3/download/"+name;
+    let url = "/s3/download/" + name;
 
     // get 으로 rest 요청한다.
     $.ajax({
-        url: "/s3/download/"+name, // 요청 url 은 download/{name}
+        url: "/s3/download/" + name, // 요청 url 은 download/{name}
         data: {
             "fileDir" : dir // 파일의 경로를 파라미터로 넣는다.
         },
