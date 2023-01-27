@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 /**
  * - 채팅을 수신(sub) 하고, 송신(pub) 하기 위한 Controller
- * - @MessageMapping : 이 어노테이션은 Stomp 에서 들어오는 message 를 서버에서 발송(pub) 한 메시지가 도착하는 엔드포인트이다. 여기서 "/chat/enterUser" 로 되어있지만 실제로는 앞에 "/pub" 가 생략되어있다라고 생각하면 된다. 즉 클라이언트가 "/pub/chat/enterUser"로 메시지를 발송하면 @MessageMapping 에 의해서 아래의 해당 어노테이션이 달린 메서드가 실행된다.
+ * - @MessageMapping : 이 어노테이션은 Stomp에서 들어오는 message를 서버에서 발송(pub) 한 메시지가 도착하는 엔드포인트이다. 여기서 "/chat/enterUser" 로 되어있지만 실제로는 앞에 "/pub" 가 생략되어있다라고 생각하면 된다. 즉 클라이언트가 "/pub/chat/enterUser"로 메시지를 발송하면 @MessageMapping에 의해서 아래의 해당 어노테이션이 달린 메서드가 실행된다.
  * - convertAndSend() : 이 메서드는 매개변수로 각각 메시지의 도착 지점과 객체를 넣어준다. 이를 통해서 도착 지점 즉 sub 되는 지점으로 인자로 들어온 객체를 Message 객체로 변환해서 해당 도작지점을 sub 하고 있는 모든 사용자에게 메시지를 보내주게 된다.
  */
 @Controller
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class ChatController {
 
-    // 아래에서 사용되는 convertAndSend 를 사용하기 위해서 서언
+    // 아래에서 사용되는 convertAndSend 를 사용하기 위해서 선언
     // convertAndSend 는 객체를 인자로 넘겨주면 자동으로 Message 객체로 변환 후 도착지로 전송한다.
     private final SimpMessageSendingOperations template;
 
@@ -55,7 +55,7 @@ public class ChatController {
         template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
     }
 
-    // 해당 유저
+    // 메세지 송신
     @MessageMapping("/chat/sendMessage")
     public void sendMessage(@Payload ChatDto chat) {
         log.info("CHAT {}", chat);
