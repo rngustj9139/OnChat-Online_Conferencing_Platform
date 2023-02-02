@@ -52,7 +52,7 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("roomId", chat.getRoomId());
 
         chat.setMessage(chat.getSender() + " 님 입장!!");
-        template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat);
+        template.convertAndSend("/sub/chat/room/" + chat.getRoomId(), chat); // 주소 앞에 sub가 붙었으니 Simple Message Broker에게 전달됨
     }
 
     // 메세지 송신

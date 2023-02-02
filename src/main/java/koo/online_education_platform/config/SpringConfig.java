@@ -28,7 +28,7 @@ public class SpringConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/sub"); // 스프링에서 제공하는 내장 메세지 브로커 이용(SimpleMessageBroker)
 
         // 메시지를 발행하는 요청 url => 즉 메시지 보낼 때
-        registry.setApplicationDestinationPrefixes("/pub"); // Message Handler로 라우팅 된다.
+        registry.setApplicationDestinationPrefixes("/pub"); // Message Handler로 라우팅 된다. (바로 메세지 브로커에게 메세지가 가는 것이 아닌 메세지의 처리나 가공이 필요할때 핸들러를 거친다.) (여기서 이후 이용하게 될 핸들러는 ChatController의 enterUser이다)
     }
 
 }
