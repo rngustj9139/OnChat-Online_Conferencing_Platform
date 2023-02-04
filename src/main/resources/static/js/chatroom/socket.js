@@ -26,7 +26,7 @@ var colors = [
 const url = new URL(location.href).searchParams;
 const roomId = url.get('roomId');
 
-function connect(event) {
+function connect(event) { // 채팅방 입장(연결)시 사용되는 함수
     username = document.querySelector('#name').value.trim();
 
     // username 중복 확인
@@ -42,7 +42,6 @@ function connect(event) {
     stompClient = Stomp.over(socket);
 
     stompClient.connect({}, onConnected, onError);
-
 
     event.preventDefault();
 }
@@ -78,7 +77,7 @@ function isDuplicateName() {
         success: function (data) {
             console.log("함수 동작 확인 : " + data);
 
-            username = data;
+            username = data; // 만약 userName 이 중복이라면 userName에 랜덤한 숫자를 붙이고 반환됨
         }
     })
 }
@@ -128,7 +127,8 @@ function sendMessage(event) {
     event.preventDefault();
 }
 
-// 메시지를 받을 때도 마찬가지로 JSON 타입으로 받으며,
+// 구독한 /sub/chat/room/roomId로 받은 수신 메세지 처리 함수
+// 클라이언트들이 메시지를 받을 때도 마찬가지로 JSON 타입으로 받으며,
 // 넘어온 JSON 형식의 메시지를 parse 해서 사용한다.
 function onMessageReceived(payload) {
     //console.log("payload 들어오냐? :"+payload);

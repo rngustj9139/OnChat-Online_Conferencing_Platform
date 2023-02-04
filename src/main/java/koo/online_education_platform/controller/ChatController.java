@@ -48,6 +48,7 @@ public class ChatController {
         String userUUID = repository.addUser(chat.getRoomId(), chat.getSender());
 
         // 반환 결과를 socket session 에 userUUID 로 저장
+        // 소켓 세션은 소켓 연결 정보를 담고 있는 객체
         headerAccessor.getSessionAttributes().put("userUUID", userUUID);
         headerAccessor.getSessionAttributes().put("roomId", chat.getRoomId());
 
