@@ -66,7 +66,6 @@ function onConnected() {
 
 // 유저 닉네임 중복 확인
 function isDuplicateName() {
-
     $.ajax({
         type: "GET",
         url: "/chat/duplicateName",
@@ -136,21 +135,19 @@ function onMessageReceived(payload) {
 
     var messageElement = document.createElement('li');
 
-    if (chat.type === 'ENTER') {  // chatType 이 enter 라면 아래 내용
+    if (chat.type === 'ENTER') {  // chatType 이 enter(유저 입장) 라면 아래 내용
         messageElement.classList.add('event-message');
         chat.content = chat.sender + chat.message;
         getUserList();
-
-    } else if (chat.type === 'LEAVE') { // chatType 가 leave 라면 아래 내용
+    } else if (chat.type === 'LEAVE') { // chatType 가 leave(유저 나감) 라면 아래 내용
         messageElement.classList.add('event-message');
         chat.content = chat.sender + chat.message;
         getUserList();
-
     } else { // chatType 이 talk 라면 아래 내용
         messageElement.classList.add('chat-message');
 
-        var avatarElement = document.createElement('i');
-        var avatarText = document.createTextNode(chat.sender[0]);
+        var avatarElement = document.createElement('i'); // 유저 메세지 옆에 뜨는 아이콘
+        var avatarText = document.createTextNode(chat.sender[0]); // chat.sender[0]은 유저의 닉네임에서 첫번째 글자를 의미
         avatarElement.appendChild(avatarText);
         avatarElement.style['background-color'] = getAvatarColor(chat.sender);
 
@@ -164,7 +161,8 @@ function onMessageReceived(payload) {
 
     var contentElement = document.createElement('p');
 
-    // 만약 s3DataUrl 의 값이 null 이 아니라면 => chat 내용이 파일 업로드와 관련된 내용이라면
+    // 업로드된 파일을 보여주기
+    // 만약 s3DataUrl 의 값이 null 이 아니라면(chat데이터에 파일 업로드와 관련된 내용이 있다면)
     // img 를 채팅에 보여주는 작업
     if(chat.s3DataUrl != null){
         var imgElement = document.createElement('img');
@@ -177,7 +175,6 @@ function onMessageReceived(payload) {
         downBtnElement.setAttribute("id", "downBtn");
         downBtnElement.setAttribute("name", chat.fileName);
         downBtnElement.setAttribute("onclick", `downloadFile('${chat.fileName}', '${chat.fileDir}')`);
-
 
         contentElement.appendChild(imgElement);
         contentElement.appendChild(downBtnElement);
@@ -195,7 +192,7 @@ function onMessageReceived(payload) {
     messageArea.scrollTop = messageArea.scrollHeight;
 }
 
-function getAvatarColor(messageSender) {
+function getAvatarColor(messageSender) { // 유저 메세지 옆에 뜨는 아이콘의 색깔을 생성하는 함수
     var hash = 0;
     for (var i = 0; i < messageSender.length; i++) {
         hash = 31 * hash + messageSender.charCodeAt(i);
@@ -270,7 +267,6 @@ function downloadFile(name, dir){
             'responseType': 'blob' // 여기도 마찬가지
         },
         success: function(data) {
-
             var link = document.createElement('a');
             link.href = URL.createObjectURL(data);
             link.download = name;

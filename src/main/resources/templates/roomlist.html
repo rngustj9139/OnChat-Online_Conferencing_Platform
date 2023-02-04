@@ -17,20 +17,21 @@
           crossorigin="anonymous">
     <script src="/js/roomlist/bootstrap-show-password.min.js"></script>
     <script th:inline="javascript">
-
         let roomId;
 
-        $(function(){
+        $(function() {
             let $maxChk = $("#maxChk");
             let $maxUserCnt = $("#maxUserCnt");
 
             // 모달창 열릴 때 이벤트 처리 => roomId 가져오기
+            // 방 입장시 패스워드 확인 모달
             $("#enterRoomModal").on("show.bs.modal", function (event) {
-                roomId = $(event.relatedTarget).data('id');
+                roomId = $(event.relatedTarget).data('id'); // event.reatedTarget은 ${room} 이다.
                 // console.log("roomId: " + roomId);
 
             });
 
+            // 채팅방 설정을 위한 패스워드 확인 모달
             $("#confirmPwdModal").on("show.bs.modal", function (e) {
                 roomId = $(e.relatedTarget).data('id');
                 // console.log("roomId: " + roomId);
@@ -38,22 +39,22 @@
             });
 
             // 채팅방 설정 시 비밀번호 확인 - keyup 펑션 활용
-            $("#confirmPwd").on("keyup", function(){
+            $("#confirmPwd").on("keyup", function() {
                 let $confirmPwd = $("#confirmPwd").val();
                 const $configRoomBtn = $("#configRoomBtn");
                 let $confirmLabel = $("#confirmLabel");
 
                 $.ajax({
                     type : "post",
-                    url : "/chat/confirmPwd/"+roomId,
+                    url : "/chat/confirmPwd/" + roomId,
                     data : {
                         "roomPwd" : $confirmPwd
                     },
-                    success : function(result){
+                    success : function (result) {
                         // console.log("동작완료")
 
                         // result 의 결과에 따라서 아래 내용 실행
-                        if(result){ // true 일때는
+                        if (result) { // true 일때는
                             // $configRoomBtn 를 활성화 상태로 만들고 비밀번호 확인 완료를 출력
                             $configRoomBtn.attr("class", "btn btn-primary");
                             $configRoomBtn.attr("aria-disabled", false);
@@ -63,7 +64,6 @@
                                 "color" : "#0D6EFD",
                                 "font-weight" : "bold",
                             });
-
                         }else{ // false 일때는
                             // $configRoomBtn 를 비활성화 상태로 만들고 비밀번호가 틀립니다 문구를 출력
                             $configRoomBtn.attr("class", "btn btn-primary disabled");
@@ -74,31 +74,27 @@
                                 "color" : "#FA3E3E",
                                 "font-weight" : "bold",
                             });
-
                         }
                     }
                 })
             })
 
-            // 기본은 유저 설정 칸 미활성화
+            // 기본은 인원 수 설정 input 칸 비활성화
             $maxUserCnt.hide();
 
-            // 체크박스 체크에 따라 인원 설정칸 활성화 여부
-            $maxChk.change(function(){
-                if($maxChk.is(':checked')){
+            // 인원 수 설정 체크박스 체크에 따라 인원 수 설정 input 칸 활성화 여부
+            $maxChk.change(function() {
+                if ($maxChk.is(':checked')) {
                     $maxUserCnt.val('');
                     $maxUserCnt.show();
-                }else{
+                } else {
                     $maxUserCnt.hide();
                 }
             })
-
         })
-
 
         // 채팅방 생성
         function createRoom() {
-
             let name = $("#roomName").val();
             let pwd = $("#roomPwd").val();
             let secret = $("#secret").is(':checked');
@@ -122,7 +118,7 @@
             }
 
             // 최소 방 인원 수는 2
-            if($maxUserCnt.val() <= 1){
+            if($maxUserCnt.val() <= 1) {
                 alert("혼자서는 채팅이 불가능해요ㅠ.ㅠ");
                 return false;
             }
@@ -137,23 +133,23 @@
         }
 
         // 채팅방 입장 시 비밀번호 확인
-        function enterRoom(){
+        function enterRoom() {
             let $enterPwd = $("#enterPwd").val();
 
             $.ajax({
                 type : "post",
-                url : "/chat/confirmPwd/"+roomId,
+                url : "/chat/confirmPwd/" + roomId,
                 async : false,
                 data : {
                     "roomPwd" : $enterPwd
                 },
-                success : function(result){
+                success : function(result) {
                     // console.log("동작완료")
                     // console.log("확인 : "+chkRoomUserCnt(roomId))
 
-                    if(result){
+                    if(result) {
                         if (chkRoomUserCnt(roomId)) {
-                            location.href = "/chat/room?roomId="+roomId;
+                            location.href = "/chat/room?roomId=" + roomId;
                         }
                     }else{
                         alert("비밀번호가 틀립니다. \n 비밀번호를 확인해주세요")
@@ -163,12 +159,12 @@
         }
 
         // 채팅방 삭제
-        function delRoom(){
-            location.href = "/chat/delRoom/"+roomId;
+        function delRoom() {
+            location.href = "/chat/delRoom/" + roomId;
         }
 
         // 채팅방 입장 시 인원 수에 따라서 입장 여부 결정
-        function chkRoomUserCnt(roomId){
+        function chkRoomUserCnt(roomId) {
             let chk;
 
             // 비동기 처리 설정 false 로 변경 => ajax 통신이 완료된 후 return 문 실행
@@ -178,19 +174,16 @@
                 type : "GET",
                 url : "/chat/chkUserCnt/"+roomId,
                 async : false,
-                success : function(result){
-
+                success : function(result) {
                     // console.log("여기가 먼저")
                     if (!result) {
                         alert("채팅방이 꽉 차서 입장 할 수 없습니다");
                     }
-
                     chk = result;
                 }
             })
             return chk;
         }
-
     </script>
     <style>
         a {
@@ -216,7 +209,6 @@
         span.input-group-text.input-password-show {
             height: 40px;
         }
-
     </style>
 </head>
 <body>
