@@ -1,5 +1,6 @@
 package koo.online_education_platform.dto;
 
+import com.sun.istack.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,12 +16,25 @@ import java.util.UUID;
 @Builder
 public class ChatRoomDto {
 
+    @NotNull
     private String roomId; // 채팅방 아이디
+
     private String roomName; // 채팅방 이름
     private int userCount; // 채팅방 인원수
     private int maxUserCnt; // 채팅방 최대 인원 제한
     private String roomPwd; // 채팅방 삭제시 필요한 pwd
     private boolean secretChk; // 채팅방 잠금 여부
-    private HashMap<String, String> userlist; // <userUUID, userName>
+
+    public enum ChatType {
+        MSG, RTC
+    }
+
+    private ChatType chatType;
+
+    /**
+     * 텍스트 채팅의 경우 <String, String> <userUUID, userName>
+     * 화상 채팅의 경우 <String, WebSocketSession>
+     */
+    private HashMap<String, ?> userlist;
 
 }
