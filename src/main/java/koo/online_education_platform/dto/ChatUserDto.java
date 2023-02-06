@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatUserDto {
+public class ChatUserDto { // 로그인시 사용되는 DTO
 
     /* TODO ChatUser 엔티티에 따라서 전체 뜯어 고치기 */
     private Long id; // DB 저장되는 id : PK

@@ -35,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                    .oauth2Login() // 소셜 로그인 사용 여부
                    .loginPage("/chatlogin") // 소셜 로그인 진행 시 사용할 url
                    .userInfoEndpoint()
-                   // SNS 로그인이 완료된 뒤 후처리가 필요함. 엑세스토큰 + 사용자프로필 정보
+                   // SNS 로그인이 완료된 뒤 후처리가 필요함. 엑세스토큰 + 사용자 프로필 정보
                    .userService(principalOauth2UserService);
     }
 

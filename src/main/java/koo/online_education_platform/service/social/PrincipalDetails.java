@@ -53,7 +53,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     // 모든 유저의 권한은 "user" 로 return 한다.
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection< GrantedAuthority> role = new ArrayList<>();
+        Collection<GrantedAuthority> role = new ArrayList<>();
 
         role.add(new GrantedAuthority() {
             @Override

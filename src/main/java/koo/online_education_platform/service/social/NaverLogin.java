@@ -1,6 +1,7 @@
 package koo.online_education_platform.service.social;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class NaverLogin implements SocialLogin {
 
@@ -24,9 +25,12 @@ public class NaverLogin implements SocialLogin {
 
     @Override
     public String getNickName() {
-        Map<String, Object> map = (Map<String, Object>) naverAttributes.get("response");
+//        Map<String, Object> map = (Map<String, Object>) naverAttributes.get("response");
+//
+//        return (String) map.get("nickname");
+        String nickName = "naverUser_" + UUID.randomUUID().toString();
 
-        return (String) map.get("nickname");
+        return nickName;
     }
 
 }
