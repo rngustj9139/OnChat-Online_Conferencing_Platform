@@ -35,6 +35,6 @@ public class ChatRoomDto {
      * 텍스트 채팅의 경우 <String, String> <userUUID, userName>
      * 화상 채팅의 경우 <String, WebSocketSession>
      */
-    private HashMap<String, ?> userlist;
+    private HashMap<String, ?> userList;
 
 }
