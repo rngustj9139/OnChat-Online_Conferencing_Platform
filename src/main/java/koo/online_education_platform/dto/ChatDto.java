@@ -1,14 +1,11 @@
 package koo.online_education_platform.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * - 채팅 내용을 위한 DTO
  */
-@Data
+@Getter @Setter
 @Builder
 /*
   (빌더 패턴 e.g.)
