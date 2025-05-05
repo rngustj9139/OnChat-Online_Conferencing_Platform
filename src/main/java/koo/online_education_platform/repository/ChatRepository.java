@@ -50,7 +50,7 @@ public class ChatRepository {
                 .roomName(roomName)
                 .roomPwd(roomPwd) // 채팅방 패스워드
                 .secretChk(secretChk) // 채팅방 잠금 여부
-                .userlist(new HashMap<String, String>())
+                .userList(new HashMap<String, String>())
                 .userCount(0) // 채팅방 참여 인원수
                 .maxUserCnt(maxUserCnt) // 최대 인원수 제한
                 .build();
@@ -91,8 +91,8 @@ public class ChatRepository {
         ChatRoomDto room = chatRoomMap.get(roomId);
         String userUUID = UUID.randomUUID().toString();
 
-        // 아이디 중복 확인 후 userList 에 추가
-        room.getUserlist().put(userUUID, userName);
+        // 타입 캐스팅을 통해 userList에 값 추가
+        ((HashMap<String, String>) room.getUserList()).put(userUUID, userName);
 
         return userUUID;
     }
@@ -104,7 +104,7 @@ public class ChatRepository {
 
         // 만약 userName 이 중복이라면 랜덤한 숫자를 붙임
         // 이때 랜덤한 숫자를 붙였을 때 getUserlist 안에 있는 닉네임이라면 다시 랜덤한 숫자 붙이기!
-        while(room.getUserlist().containsValue(tmp)){
+        while(room.getUserList().containsValue(tmp)){
             int ranNum = (int) (Math.random() * 100) + 1;
 
             tmp = username + ranNum;
@@ -116,14 +116,14 @@ public class ChatRepository {
     // 채팅방 유저 리스트 삭제
     public void delUser(String roomId, String userUUID){
         ChatRoomDto room = chatRoomMap.get(roomId);
-        room.getUserlist().remove(userUUID);
+        room.getUserList().remove(userUUID);
     }
 
     // 채팅방 userName 조회
     public String getUserName(String roomId, String userUUID){
         ChatRoomDto room = chatRoomMap.get(roomId);
 
-        return room.getUserlist().get(userUUID);
+        return (String) room.getUserList().get(userUUID);
     }
 
     // 채팅방 전체 userlist 조회
@@ -134,7 +134,7 @@ public class ChatRepository {
 
         // hashmap 을 for 문을 돌린 후
         // value 값만 뽑아내서 list 에 저장 후 reutrn
-        room.getUserlist().forEach((key, value) -> list.add(value));
+        room.getUserList().forEach((key, value) -> list.add((String) value));
 
         return list;
     }
