@@ -14,8 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * - MsgChatService 와 RtcChatService 의 공동된 부분을 모아놓은 서비스
- * - 채팅방 생성, 삭제, 유저 입장 시 userCnt+1, 퇴장시 userCnt-1 등등
+ * MsgChatService와 RtcChatService 기능의 공동된 부분을 모아놓은 Service 계층
  */
 @Service
 @Getter @Setter
@@ -25,7 +24,7 @@ public class ChatServiceMain {
 
     private final MsgChatService msgChatService;
     private final RtcChatService rtcChatService;
-    private final FileService fileService; // 채팅방 삭제에 따른 채팅방의 사진 삭제를 위한 fileService 선언
+    private final FileService fileService;
 
     // 전체 채팅방 조회
     public List<ChatRoomDto> findAllRoom() {
