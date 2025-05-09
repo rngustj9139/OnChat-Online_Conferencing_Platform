@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 	<title>Chat For You Login</title>
 	<meta charset="UTF-8">
@@ -40,6 +40,12 @@
 				<span class="login100-form-title p-b-34 p-t-27">
 						Log in
 					</span>
+
+				<div class="text-center mb-3">
+					<p th:if="${param.error}" class="text-danger">
+						아이디 또는 비밀번호가 올바르지 않습니다.
+					</p>
+				</div>
 
 				<div class="wrap-input100 validate-input" data-validate = "Enter username">
 					<input class="input100" type="text" name="nickName" placeholder="Username">

@@ -3,6 +3,7 @@ package koo.online_education_platform.config;
 import koo.online_education_platform.entity.ChatUser;
 import koo.online_education_platform.repository.ChatUserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class TestUserDataLoader implements ApplicationRunner {
 
     private final ChatUserRepository userRepository;
@@ -18,17 +20,16 @@ public class TestUserDataLoader implements ApplicationRunner {
     @Override
     public void run (ApplicationArguments args) throws Exception {
         // 이미 생성되어 있지 않다면
-        if (userRepository.findByNickName("testuser").isEmpty()) {
+        if (userRepository.findByNickName("admin").isEmpty()) { // isEmpty() 내장함수는 Optional이 값을 가지고 있지 않을 때 true를 반환
             ChatUser test = ChatUser.builder()
-                    .nickName("testuser")
-                    .passwd(passwordEncoder.encode("testpass"))
-                    .email("test@example.com")
+                    .nickName("admin")
+                    .passwd(passwordEncoder.encode("admin"))
+                    .email("admin@example.com")
                     .provider("DEFAULT")
                     .build();
             userRepository.save(test);
-            System.out.println(">>> 테스트용 유저(testuser) 생성 완료");
+            log.info(">>> 테스트용 유저(admin) 생성 완료");
         }
     }
-
 
 }

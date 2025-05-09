@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -20,9 +21,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final PrincipalDetailService detailService;
     private final PrincipalOauth2UserService oauth2UserService;
 
-    // Security 를 이용한 각종 권한 접근 경로 등 설정
     @Override
-    protected void configure (HttpSecurity http) throws Exception {
+    protected void configure (HttpSecurity http) throws Exception { // 기본 설정 및 소셜 로그인
         http.csrf().disable()
                    .authorizeHttpRequests()
                    // "/" 아래로 접근하는 모든 유저에 대해서 허용 => 즉 모든 경로에 대해서 허용
@@ -43,6 +43,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                    .userInfoEndpoint()
                    // SNS 로그인이 완료된 뒤 후처리가 필요함. 엑세스토큰 + 사용자 프로필 정보
                    .userService(oauth2UserService);
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception { // 일반 (디폴트) 로그인
+        auth.userDetailsService(detailService)
+                .passwordEncoder(passwordEncoder());
     }
 
     @Bean
