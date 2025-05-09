@@ -1,13 +1,11 @@
 package koo.online_education_platform.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * WebRTC 연결 시 사용되는 클래스로 초기 연결 정보를 교환할 때 사용된다.
  **/
-@Data
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class WebSocketMessage {
