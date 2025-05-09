@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-public class TestUserDataLoader implements ApplicationRunner {
+public class TestUserDataLoaderConfig implements ApplicationRunner {
 
     private final ChatUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
