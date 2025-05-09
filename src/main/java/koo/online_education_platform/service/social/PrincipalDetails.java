@@ -1,6 +1,7 @@
 package koo.online_education_platform.service.social;
 
 import koo.online_education_platform.dto.ChatUserDto;
+import koo.online_education_platform.entity.ChatUser;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,8 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-// SpringSecurity 를 이용한 로그인 시 세션에 저장되는 UserDetails, OAuth2User 를 상속받은
-// 구현 클래스
+// SpringSecurity 를 이용한 로그인 시 세션에 저장되는 UserDetails, OAuth2User 를 상속받은 구현 클래스
 @Data
 public class PrincipalDetails implements UserDetails, OAuth2User {
 
@@ -25,9 +25,9 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     private String provider;
 
     // 일반 유저
-    public PrincipalDetails(ChatUserDto user, String provider) {
-        this.user = user;
-        this.provider = provider;
+    public PrincipalDetails(ChatUser user) {
+        this.user = ChatUserDto.of(user);
+        this.provider = "DEFAULT";
     }
 
     // OAuth2User 유저 -> 소셜 로그인 유저
