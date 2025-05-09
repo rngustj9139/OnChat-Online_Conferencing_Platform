@@ -13,7 +13,6 @@ import java.util.*;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class RtcChatService {
 
     public ChatRoomDto createChatRoom(String roomName, String roomPwd, boolean secretChk, int maxUserCnt) {

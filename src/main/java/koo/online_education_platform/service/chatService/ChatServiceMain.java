@@ -40,7 +40,7 @@ public class ChatServiceMain {
         return ChatRoomMap.getInstance().getChatRooms().get(roomId);
     }
 
-    // roomName 로 채팅방 만들기
+    // roomName으로 채팅방 만들기
     public ChatRoomDto createChatRoom (String roomName, String roomPwd, boolean secretChk, int maxUserCnt, String chatType) {
         ChatRoomDto room;
 
@@ -75,7 +75,7 @@ public class ChatServiceMain {
         room.setUserCount(room.getUserCount() - 1);
     }
 
-    // maxUserCnt 에 따른 채팅방 입장 여부
+    // maxUserCnt에 따른 채팅방 입장 여부
     public boolean chkRoomUserCnt (String roomId) {
         ChatRoomDto room = ChatRoomMap.getInstance().getChatRooms().get(roomId);
 
