@@ -37,11 +37,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         // provider 정보 확인 => 어떤 SNS 로 로그인했는지 확인
         String provider = userRequest.getClientRegistration().getRegistrationId();
 
-        if ("kakao".equals(provider)) {
-            // 카카오 로그인인 경우 KaKaoLogin 클래스에 소셜 로그인 정보가 담긴
-            // oAuth2User.getAttributes() 를 보내주고 정보를 담는다
-            login = new KaKaoLogin(oAuth2User.getAttributes());
-        } else if ("naver".equals(provider)) {
+       if ("naver".equals(provider)) {
             // 네이버 로그인인 경우 NaverLogin 클래스를 소셜 로그인 정보가 담긴
             // oAuth2User.getAttributes() 를 보내주고 정보를 담는다
             login = new NaverLogin(oAuth2User.getAttributes());
