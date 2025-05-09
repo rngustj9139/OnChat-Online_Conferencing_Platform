@@ -17,44 +17,83 @@
           crossorigin="anonymous">
     <script src="/js/roomlist/bootstrap-show-password.min.js"></script>
     <script th:inline="javascript">
+
         let roomId;
 
-        $(function() {
+        $(function(){
             let $maxChk = $("#maxChk");
             let $maxUserCnt = $("#maxUserCnt");
+            let $rtcType = $("#rtcType");
+            let $msgType = $("#msgType");
 
             // 모달창 열릴 때 이벤트 처리 => roomId 가져오기
-            // 방 입장시 패스워드 확인 모달
             $("#enterRoomModal").on("show.bs.modal", function (event) {
-                roomId = $(event.relatedTarget).data('id'); // event.reatedTarget은 ${room} 이다.
+                roomId = $(event.relatedTarget).data('id');
                 // console.log("roomId: " + roomId);
 
             });
 
-            // 채팅방 설정을 위한 패스워드 확인 모달
             $("#confirmPwdModal").on("show.bs.modal", function (e) {
                 roomId = $(e.relatedTarget).data('id');
                 // console.log("roomId: " + roomId);
 
             });
 
-            // 채팅방 설정 시 비밀번호 확인 - keyup 펑션 활용
-            $("#confirmPwd").on("keyup", function() {
+            // 채팅방 설정 시 비밀번호 확인
+            confirmPWD();
+
+            // // 기본은 유저 설정 칸 미활성화
+            // $maxUserCnt.hide();
+
+            // // 체크박스 체크에 따라 인원 설정칸 활성화 여부
+            // $maxChk.change(function(){
+            //     if($maxChk.is(':checked')){
+            //         $maxUserCnt.val('');
+            //         $maxUserCnt.show();
+            //     }else{
+            //         $maxUserCnt.hide();
+            //     }
+            // })
+
+            // 화상 채팅 시 1:1 임으로 2명 고정
+            $rtcType.change(function() {
+                if($rtcType.is(':checked')){
+                    let number = 2;
+
+                    $("#maxUserCnt").val(parseInt(2));
+                    // $("#maxUserCnt").attr('value', 2)
+                    $("#maxUserCnt").attr('disabled', true);
+                }
+            })
+
+            // 문자 채팅 누를 시 disabled 풀림
+            $msgType.change(function(){
+                if($msgType.is(':checked')){
+                    $maxUserCnt.attr('disabled', false);
+                }
+            })
+        })
+
+
+
+        // 채팅방 설정 시 비밀번호 확인 - keyup 펑션 활용
+        function confirmPWD(){
+            $("#confirmPwd").on("keyup", function(){
                 let $confirmPwd = $("#confirmPwd").val();
                 const $configRoomBtn = $("#configRoomBtn");
                 let $confirmLabel = $("#confirmLabel");
 
                 $.ajax({
                     type : "post",
-                    url : "/chat/confirmPwd/" + roomId,
+                    url : "/chat/confirmPwd/"+roomId,
                     data : {
                         "roomPwd" : $confirmPwd
                     },
-                    success : function (result) {
+                    success : function(result){
                         // console.log("동작완료")
 
                         // result 의 결과에 따라서 아래 내용 실행
-                        if (result) { // true 일때는
+                        if(result){ // true 일때는
                             // $configRoomBtn 를 활성화 상태로 만들고 비밀번호 확인 완료를 출력
                             $configRoomBtn.attr("class", "btn btn-primary");
                             $configRoomBtn.attr("aria-disabled", false);
@@ -64,6 +103,7 @@
                                 "color" : "#0D6EFD",
                                 "font-weight" : "bold",
                             });
+
                         }else{ // false 일때는
                             // $configRoomBtn 를 비활성화 상태로 만들고 비밀번호가 틀립니다 문구를 출력
                             $configRoomBtn.attr("class", "btn btn-primary disabled");
@@ -74,32 +114,30 @@
                                 "color" : "#FA3E3E",
                                 "font-weight" : "bold",
                             });
+
                         }
                     }
                 })
             })
+        }
 
-            // 기본은 인원 수 설정 input 칸 비활성화
-            $maxUserCnt.hide();
-
-            // 인원 수 설정 체크박스 체크에 따라 인원 수 설정 input 칸 활성화 여부
-            $maxChk.change(function() {
-                if ($maxChk.is(':checked')) {
-                    $maxUserCnt.val('');
-                    $maxUserCnt.show();
-                } else {
-                    $maxUserCnt.hide();
-                }
-            })
-        })
+        // 채팅 인원 숫자만 정규식 체크
+        function numberChk(){
+            let check = /^[0-9]+$/;
+            if (!check.test($("#maxUserCnt").val())) {
+                alert("채팅 인원에는 숫자만 입력 가능합니다!!")
+                return false;
+            }
+            return true;
+        }
 
         // 채팅방 생성
         function createRoom() {
+
             let name = $("#roomName").val();
             let pwd = $("#roomPwd").val();
             let secret = $("#secret").is(':checked');
             let secretChk = $("#secretChk");
-            let $maxUserCnt = $("#maxUserCnt");
 
             // console.log("name : " + name);
             // console.log("pwd : " + pwd);
@@ -138,27 +176,31 @@
                 secretChk.attr('value', false);
             }
 
+            if(!numberChk()){
+                return false;
+            }
+
             return true;
         }
 
         // 채팅방 입장 시 비밀번호 확인
-        function enterRoom() {
+        function enterRoom(){
             let $enterPwd = $("#enterPwd").val();
 
             $.ajax({
                 type : "post",
-                url : "/chat/confirmPwd/" + roomId,
+                url : "/chat/confirmPwd/"+roomId,
                 async : false,
                 data : {
                     "roomPwd" : $enterPwd
                 },
-                success : function(result) {
+                success : function(result){
                     // console.log("동작완료")
                     // console.log("확인 : "+chkRoomUserCnt(roomId))
 
-                    if(result) {
+                    if(result){
                         if (chkRoomUserCnt(roomId)) {
-                            location.href = "/chat/room?roomId=" + roomId;
+                            location.href = "/chat/room?roomId="+roomId;
                         }
                     }else{
                         alert("비밀번호가 틀립니다. \n 비밀번호를 확인해주세요")
@@ -168,12 +210,12 @@
         }
 
         // 채팅방 삭제
-        function delRoom() {
-            location.href = "/chat/delRoom/" + roomId;
+        function delRoom(){
+            location.href = "/chat/delRoom/"+roomId;
         }
 
         // 채팅방 입장 시 인원 수에 따라서 입장 여부 결정
-        function chkRoomUserCnt(roomId) {
+        function chkRoomUserCnt(roomId){
             let chk;
 
             // 비동기 처리 설정 false 로 변경 => ajax 통신이 완료된 후 return 문 실행
@@ -183,16 +225,20 @@
                 type : "GET",
                 url : "/chat/chkUserCnt/"+roomId,
                 async : false,
-                success : function(result) {
+                success : function(result){
+
                     // console.log("여기가 먼저")
                     if (!result) {
                         alert("채팅방이 꽉 차서 입장 할 수 없습니다");
                     }
+
                     chk = result;
                 }
             })
             return chk;
         }
+
+
     </script>
     <style>
         a {
@@ -218,12 +264,12 @@
         span.input-group-text.input-password-show {
             height: 40px;
         }
+
     </style>
 </head>
 <body>
 <div class="container">
     <div class="container">
-
         <h2>채팅방 리스트</h2>
 
         <div th:if="${user == null}" class="row">
@@ -234,11 +280,13 @@
         <h5 th:if="${user != null}">
             [[${user.nickName}]]
         </h5>
+
         <table class="table table-hover" id="table">
             <tr>
                 <th scope="col">채팅방명</th>
                 <th scope="col">잠금 여부</th>
                 <th scope="col">참여 인원</th>
+                <th scope="col">채팅 종류</th>
                 <th scope="col">채팅방 설정</th>
             </tr>
             <th:block th:fragment="content">
@@ -259,6 +307,10 @@
                     </td>
                     <td>
                         <span class="badge bg-primary rounded-pill">[[${room.userCount}]]/[[${room.maxUserCnt}]]</span>
+                    </td>
+                    <td>
+                        <span th:if="${#strings.equals(room.chatType, 'MSG')}">일반 채팅</span>
+                        <span th:unless="${#strings.equals(room.chatType, 'MSG')}">화상 채팅</span>
                     </td>
                     <td>
                         <button class="btn btn-primary btn-sm" id="configRoom" data-bs-toggle="modal" data-bs-target="#confirmPwdModal" th:data-id="${room.roomId}">채팅방 설정</button>
@@ -309,9 +361,9 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="maxUserCnt" class="col-form-label">채팅방 인원 설정(미체크 시 기본 100명)
-                            <input class="form-check-input" type="checkbox" id="maxChk"></label>
-                        <input type="text" class="form-control" id="maxUserCnt" name="maxUserCnt" value="100">
+                        <label for="maxUserCnt" class="col-form-label">채팅방 인원 설정
+                            <!--<input class="form-check-input" type="checkbox" id="maxChk">--></label>
+                        <input type="text" class="form-control" id="maxUserCnt" name="maxUserCnt">
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="secret">
@@ -388,38 +440,38 @@
                 <h5 class="modal-title">채팅방 설정</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="chPwd" class="col-form-label">비밀번호 변경</label>
-                        <div class="input-group">
-                            <input type="password" name="confirmPwd" id="chPwd" class="form-control" data-toggle="password">
-                            <div class="input-group-append">
-                                <span class="input-group-text"><i class="fa fa-eye"></i></span>
-                            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="chPwd" class="col-form-label">비밀번호 변경</label>
+                    <div class="input-group">
+                        <input type="password" name="confirmPwd" id="chPwd" class="form-control" data-toggle="password">
+                        <div class="input-group-append">
+                            <span class="input-group-text"><i class="fa fa-eye"></i></span>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="chRoomName" class="col-form-label">채팅방 이름 변경</label>
-                        <input type="text" class="form-control" id="chRoomName" name="chRoomName">
-                    </div>
-                    <div class="mb-3">
-                        <label for="chRoomUserCnt" class="col-form-label">채팅방 인원 변경</label>
-                        <input type="text" class="form-control" id="chRoomUserCnt" name="chUserCnt">
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="chSecret">
-                        <input type="hidden" name="secretChk" id="chSecretChk" value="">
-                        <label class="form-check-label" for="secret">
-                            채팅방 잠금
-                        </label>
-                    </div>
-                    <div class="mb-3">
-                        <button type="button" class="btn btn-primary" onclick="delRoom()">방 삭제</button>
-                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <div class="mb-3">
+                    <label for="chRoomName" class="col-form-label">채팅방 이름 변경</label>
+                    <input type="text" class="form-control" id="chRoomName" name="chRoomName">
                 </div>
+                <div class="mb-3">
+                    <label for="chRoomUserCnt" class="col-form-label">채팅방 인원 변경</label>
+                    <input type="text" class="form-control" id="chRoomUserCnt" name="chUserCnt">
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="chSecret">
+                    <input type="hidden" name="secretChk" id="chSecretChk" value="">
+                    <label class="form-check-label" for="secret">
+                        채팅방 잠금
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-primary" onclick="delRoom()">방 삭제</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>
