@@ -25,25 +25,25 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     private String provider;
 
     // 일반 유저
-    public PrincipalDetails(ChatUser user) {
+    public PrincipalDetails (ChatUser user) {
         this.user = ChatUserDto.of(user);
-        this.provider = "DEFAULT";
+        this.provider = user.getProvider();
     }
 
     // OAuth2User 유저 -> 소셜 로그인 유저
-    public PrincipalDetails(ChatUserDto user, Map<String, Object> attributes, String provider){
+    public PrincipalDetails (ChatUserDto user, Map<String, Object> attributes, String provider){
         this.user = user;
         this.attributes = attributes;
         this.provider = provider;
     }
 
     @Override
-    public Map<String, Object> getAttributes() {
+    public Map<String, Object> getAttributes () {
         return null;
     }
 
     @Override
-    public String getName() {
+    public String getName () {
         return user.getNickName();
     }
 
@@ -52,7 +52,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     // 현재는 DB 를 사용해서 회원가입을 하는게 아니라 소셜 로그인을 하는 것! 이 목적이기 때문에
     // 모든 유저의 권한은 "user" 로 return 한다.
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<? extends GrantedAuthority> getAuthorities () {
         Collection<GrantedAuthority> role = new ArrayList<>();
 
         role.add(new GrantedAuthority() {
@@ -66,32 +66,32 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     }
 
     @Override
-    public String getPassword() {
-        return "nopwd";
+    public String getPassword () {
+        return user.getPasswd(); // 추가해야 로그인시 raw 비밀번호와 암호화 (encoding) 된 비밀번호가 일치
     }
 
     @Override
-    public String getUsername() {
+    public String getUsername () {
         return user.getNickName();
     }
 
     @Override
-    public boolean isAccountNonExpired() {
+    public boolean isAccountNonExpired () {
         return true;
     }
 
     @Override
-    public boolean isAccountNonLocked() {
+    public boolean isAccountNonLocked () {
         return true;
     }
 
     @Override
-    public boolean isCredentialsNonExpired() {
+    public boolean isCredentialsNonExpired () {
         return true;
     }
 
     @Override
-    public boolean isEnabled() {
+    public boolean isEnabled () {
         return true;
     }
 

@@ -17,6 +17,7 @@ public class ChatUserDto {
     public static ChatUserDto of (ChatUser chatUser) { // ChatUserDto chatUserDto = ChatUserDto.of(chatUser);
         ChatUserDto chatUserDto = ChatUserDto.builder()
                 .nickName(chatUser.getNickName())
+                .passwd(chatUser.getPasswd())
                 .email(chatUser.getEmail())
                 .provider(chatUser.getProvider())
                 .build();

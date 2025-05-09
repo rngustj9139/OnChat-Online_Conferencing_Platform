@@ -32,6 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                    // Security 의 기본 login 페이지가 아닌 커스텀 페이지를 사용하기 위한 설정
                    // 로그인 페이지 url
                    .formLogin().loginPage("/chatlogin").permitAll()
+                   .usernameParameter("nickName")
+                   .passwordParameter("passwd")
                    .loginProcessingUrl("/login") // 로그인 요청 url
                    .defaultSuccessUrl("/") // 로그인 완료 시 요청 url
                 .and()
