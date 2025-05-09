@@ -117,9 +117,18 @@
                 return false;
             }
 
-            // 최소 방 인원 수는 2
-            if($maxUserCnt.val() <= 1) {
-                alert("혼자서는 채팅이 불가능해요ㅠ.ㅠ");
+            // 최소 방 인원 수는 2, 최대 100명
+            if($("#maxUserCnt").val() <= 1){
+                alert("채팅은 최소 2명 이상!!");
+                return false;
+            }else if ($("#maxUserCnt").val() > 100) {
+                alert("100명 이상은 서버가 못 버텨요ㅠ.ㅠ");
+                return false;
+            }
+
+            // 채팅 타입 필수
+            if ($('input[name=chatType]:checked').val() == null) {
+                alert("채팅 타입은 필수입니다")
                 return false;
             }
 
@@ -283,6 +292,20 @@
                             <div class="input-group-append">
                                 <span class="input-group-text"><i class="fa fa-eye"></i></span>
                             </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="chatType" id="msgType" value="msgChat">
+                            <label class="form-check-label" for="msgType">
+                                일반 채팅(최대 100명)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="chatType" id="rtcType" value="rtcChat">
+                            <label class="form-check-label" for="rtcType">
+                                화상 채팅(1:1 Only)
+                            </label>
                         </div>
                     </div>
                     <div class="mb-3">

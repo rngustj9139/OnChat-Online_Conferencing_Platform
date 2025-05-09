@@ -1,8 +1,9 @@
 package koo.online_education_platform.controller;
 
 import koo.online_education_platform.dto.ChatRoomDto;
-import koo.online_education_platform.repository.ChatRepository;
+import koo.online_education_platform.service.chatService.ChatServiceMain;
 import koo.online_education_platform.service.social.PrincipalDetails;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,22 +14,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class ChatRoomController {
 
-    // ChatRepository Bean 가져오기
-    @Autowired
-    private ChatRepository chatRepository;
-
-    // 채팅 리스트 화면
-    // / 로 요청이 들어오면 전체 채팅룸 리스트를 담아서 return
+    private final ChatServiceMain chatServiceMain;
 
     // 스프링 시큐리티의 로그인 유저 정보는 Security 세션의 PrincipalDetails 안에 담긴다
-    // 정확히는 PrincipalDetails 안에 ChatUser 객체가 담기고, 이것을 가져오면 된다.
+    // 정확히는 PrincipalDetails 내부에 ChatUser 객체가 담기고, 이것을 가져오면 된다.
     @GetMapping("/")
     public String goChatRoom(Model model, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-        model.addAttribute("list", chatRepository.findAllRoom());
+        model.addAttribute("list", chatServiceMain.findAllRoom());
 
-        // principalDetails 가 null 이 아니라면 로그인 된 상태!!
+        // principalDetails 가 null 이 아니라면 로그인 된 상태를 의미
         if (principalDetails != null) {
             // 세션에서 로그인 유저 정보를 가져옴
             model.addAttribute("user", principalDetails.getUser());
@@ -36,7 +33,7 @@ public class ChatRoomController {
         }
 
         // model.addAttribute("user", "hey");
-        log.info("SHOW ALL ChatList {}", chatRepository.findAllRoom());
+        log.info("SHOW ALL ChatList {}", chatServiceMain.findAllRoom());
 
         return "roomlist";
     }
@@ -44,11 +41,15 @@ public class ChatRoomController {
     // 채팅방 생성
     // 채팅방 생성 후 다시 / 로 redirect
     @PostMapping("/chat/createroom")
-    public String createRoom(@RequestParam("roomName") String name, @RequestParam("roomPwd") String roomPwd, @RequestParam("secretChk") String secretChk,
-                             @RequestParam(value = "maxUserCnt", defaultValue = "100") String maxUserCnt,  RedirectAttributes rttr) {
+    public String createRoom(@RequestParam("roomName") String name,
+                             @RequestParam("roomPwd") String roomPwd,
+                             @RequestParam("secretChk") String secretChk,
+                             @RequestParam(value = "maxUserCnt", defaultValue = "100") String maxUserCnt,
+                             @RequestParam("chatType") String chatType,
+                             RedirectAttributes rttr) {
         // log.info("chk {}", secretChk);
         // 매개변수 : 방 이름, 패스워드, 방 잠금 여부, 방 인원수
-        ChatRoomDto room = chatRepository.createChatRoom(name, roomPwd, Boolean.parseBoolean(secretChk), Integer.parseInt(maxUserCnt));
+        ChatRoomDto room = chatServiceMain.createChatRoom(name, roomPwd, Boolean.parseBoolean(secretChk), Integer.parseInt(maxUserCnt), chatType);
 
         log.info("CREATE Chat Room [{}]", room);
         rttr.addFlashAttribute("roomName", room);
@@ -68,7 +69,7 @@ public class ChatRoomController {
             model.addAttribute("user", principalDetails.getUser());
         }
 
-        model.addAttribute("room", chatRepository.findRoomById(roomId));
+        model.addAttribute("room", chatServiceMain.findRoomById(roomId));
 
         return "chatroom";
     }
@@ -79,7 +80,7 @@ public class ChatRoomController {
     public boolean confirmPwd(@PathVariable String roomId, @RequestParam String roomPwd) {
         // 넘어온 roomId 와 roomPwd 를 이용해서 비밀번호 찾기
         // 찾아서 입력받은 roomPwd 와 room pwd 와 비교해서 맞으면 true, 아니면 false
-        return chatRepository.confirmPwd(roomId, roomPwd);
+        return chatServiceMain.confirmPwd(roomId, roomPwd);
     }
 
     // 채팅방 삭제
@@ -87,7 +88,7 @@ public class ChatRoomController {
     @GetMapping("/chat/delRoom/{roomId}")
     public String delChatRoom(@PathVariable String roomId) {
         // roomId 기준으로 chatRoomMap 에서 삭제, 해당 채팅룸 안에 있는 사진 삭제
-        chatRepository.delChatRoom(roomId);
+        chatServiceMain.delChatRoom(roomId);
 
         return "redirect:/";
     }
@@ -95,7 +96,7 @@ public class ChatRoomController {
     @GetMapping("/chat/chkUserCnt/{roomId}")
     @ResponseBody
     public boolean chUserCnt(@PathVariable String roomId) {
-        return chatRepository.chkRoomUserCnt(roomId);
+        return chatServiceMain.chkRoomUserCnt(roomId);
     }
 
 }
