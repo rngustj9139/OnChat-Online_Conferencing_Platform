@@ -23,14 +23,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure (HttpSecurity http) throws Exception { // 기본 설정 및 소셜 로그인
-        http.csrf().disable()
+        http.csrf().disable() // Spring Security의 기본 csrf 보호 기능을 disable (CSRF e.g. 사용자가 A 사이트에 로그인 (세션 쿠키 존재) → 악성 사이트 B에 방문 → B 사이트가 사용자의 세션 쿠키를 이용해 A 사이트에 요청을 보냄 (예: 게시글 작성, 결제 등) → 사용자는 의도하지 않은 행동을 하게 됨)
                    .authorizeHttpRequests()
                    // "/" 아래로 접근하는 모든 유저에 대해서 허용 => 즉 모든 경로에 대해서 허용
                    // 로그인 안해도 채팅은 가능하기 때문에 로그인 없이도 모든 경로에 접근할 수 있도록 설정
                    .antMatchers("/**").permitAll()
                 .and()
-                   // Security 의 기본 login 페이지가 아닌 커스텀 페이지를 사용하기 위한 설정
-                   // 로그인 페이지 url
+                   // Security의 기본 login 페이지가 아닌 커스텀 로그인 페이지를 사용하기 위한 설정
                    .formLogin().loginPage("/chatlogin").permitAll()
                    .usernameParameter("nickName")
                    .passwordParameter("passwd")
@@ -48,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception { // 일반 (디폴트) 로그인
+    protected void configure (AuthenticationManagerBuilder auth) throws Exception { // 일반 (디폴트) 로그인
         auth.userDetailsService(detailService)
                 .passwordEncoder(passwordEncoder());
     }
