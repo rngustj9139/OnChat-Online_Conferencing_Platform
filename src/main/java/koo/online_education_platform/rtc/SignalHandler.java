@@ -96,9 +96,12 @@ public class SignalHandler extends TextWebSocketHandler {
             String userUUID = message.getFrom(); // 유저 uuid
             String roomId = message.getData(); // roomId
 
+//            logger.info("Message {}", message.toString());
+
             ChatRoomDto room;
             // 메시지 타입에 따라서 서버에서 하는 역할이 달라진다
             switch (message.getType()) {
+
                 // 클라이언트에게서 받은 메시지 타입에 따른 signal 프로세스
                 case MSG_TYPE_OFFER:
                 case MSG_TYPE_ANSWER:

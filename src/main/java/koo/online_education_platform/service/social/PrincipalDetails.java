@@ -11,9 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-// SpringSecurity 를 이용한 로그인 시 세션에 저장되는 UserDetails, OAuth2User 를 상속받은 구현 클래스
 @Data
-public class PrincipalDetails implements UserDetails, OAuth2User {
+public class PrincipalDetails implements UserDetails, OAuth2User { // UserDetails는 Spring Security에서 인증된 사용자의 정보를 담는 기본 인터페이스, OAuth2User는 구글, 네이버, 카카오 같은 OAuth2 인증 제공자로부터 받은 사용자 정보를 표현하는 인터페이스
 
     // ChatUserDTO
     private ChatUserDto user;
