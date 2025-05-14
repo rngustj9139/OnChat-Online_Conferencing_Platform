@@ -272,21 +272,14 @@
     <div class="container">
         <h2>채팅방 리스트</h2>
 
-        <!-- 로그인 전 -->
         <div th:if="${user == null}" class="row">
             <div class="col">
-                <a href="/chatlogin"><button type="button" class="btn btn-primary">로그인</button></a>
-                <a href="/signup" class="btn btn-secondary">회원가입</a>
+                <a href="/chatlogin"><button type="button" class="btn btn-primary">로그인하기</button></a>
             </div>
         </div>
-        <!-- 로그인 후 -->
-            <h5 th:if="${user != null}">
-                [[${user.nickName}]]님, 환영합니다!
-                <div class="col">
-                    <a href="/logout"><button type="button" class="btn btn-secondary">로그아웃</button></a>
-                </div>
-            </h5>
-        </div>
+        <h5 th:if="${user != null}">
+            [[${user.nickName}]]
+        </h5>
 
         <table class="table table-hover" id="table">
             <tr>
