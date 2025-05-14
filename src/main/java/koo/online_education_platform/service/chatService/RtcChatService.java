@@ -53,11 +53,11 @@ public class RtcChatService {
     }
 
     // 유저 카운터 return
-    public int findUserCount (WebSocketMessage webSocketMessage){ // WebSocketMessage: 커스텀 클래스
+    public boolean findUserCount (WebSocketMessage webSocketMessage){ // WebSocketMessage: 커스텀 클래스
         ChatRoomDto room = ChatRoomMap.getInstance().getChatRooms().get(webSocketMessage.getData());
         log.info("ROOM COUNT : [{} ::: {}]", room.toString(), room.getUserList().size());
 
-        return room.getUserList().size();
+        return room.getUserList().size() > 1;
     }
 
 }
