@@ -1,9 +1,8 @@
 package koo.online_education_platform.config;
 
-import koo.online_education_platform.service.social.PrincipalDetailService;
+import koo.online_education_platform.service.social.PrincipalDetailsService;
 import koo.online_education_platform.service.social.PrincipalOauth2UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final PrincipalDetailService detailService;
+    private final PrincipalDetailsService detailService;
     private final PrincipalOauth2UserService oauth2UserService;
 
     @Override

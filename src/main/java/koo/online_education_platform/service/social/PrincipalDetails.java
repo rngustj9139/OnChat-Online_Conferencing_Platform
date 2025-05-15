@@ -46,10 +46,12 @@ public class PrincipalDetails implements UserDetails, OAuth2User { // UserDetail
         return user.getNickName();
     }
 
-    // 해당 유저의 권한을 return
-    // 원래는 회원 가입 시 유저의 권한을 설정해두고 해당 유저의 권한을 return 해야하나
-    // 현재는 DB 를 사용해서 회원가입을 하는게 아니라 소셜 로그인을 하는 것! 이 목적이기 때문에
-    // 모든 유저의 권한은 "user" 로 return 한다.
+    /*
+     해당 유저의 권한을 return
+     원래는 회원 가입 시 유저의 권한을 설정해두고 해당 유저의 권한을 return 해야하나
+     현재는 DB 를 사용해서 로그인을 하는게 아니라 소셜 로그인을 하는 것이기 때문에
+     모든 유저의 권한은 "user" 로 return 한다.
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities () {
         Collection<GrantedAuthority> role = new ArrayList<>();
