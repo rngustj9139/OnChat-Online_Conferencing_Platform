@@ -25,9 +25,6 @@ public class NaverLogin implements SocialLogin {
 
     @Override
     public String getNickName() {
-//        Map<String, Object> map = (Map<String, Object>) naverAttributes.get("response");
-//
-//        return (String) map.get("nickname");
         String nickName = "naverUser_" + UUID.randomUUID().toString();
 
         return nickName;

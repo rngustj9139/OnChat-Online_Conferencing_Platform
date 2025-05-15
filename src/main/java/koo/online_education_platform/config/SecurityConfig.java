@@ -1,7 +1,7 @@
 package koo.online_education_platform.config;
 
 import koo.online_education_platform.service.social.PrincipalDetailsService;
-import koo.online_education_platform.service.social.PrincipalOauth2UserService;
+import koo.online_education_platform.service.social.PrincipalOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PrincipalDetailsService detailService;
-    private final PrincipalOauth2UserService oauth2UserService;
+    private final PrincipalOAuth2UserService oauth2UserService;
 
     @Override
     protected void configure (HttpSecurity http) throws Exception { // 기본 설정 및 소셜 로그인 (public 접근 제어자: 같은 클래스, 자식 클래스, 외부 클래스에서 호출 가능, private 접근 제어자: 같은 클래스 내에서만 호출 가능, protected 접근 제어자: 같은 클래스, 자식 클래스만 호출 가능)

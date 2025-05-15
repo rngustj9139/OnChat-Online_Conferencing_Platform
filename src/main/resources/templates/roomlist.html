@@ -277,8 +277,9 @@
                 <a href="/chatlogin"><button type="button" class="btn btn-primary">로그인하기</button></a>
             </div>
         </div>
-        <h5 th:if="${user != null}">
-            [[${user.nickName}]]
+        <h5 th:if="${user != null}" class="d-flex align-items-center">
+            <span>[[${user.nickName}]]님, 반갑습니다!</span>
+            <a href="/logout" class="btn btn-secondary btn-sm ms-3">로그아웃</a>
         </h5>
 
         <table class="table table-hover" id="table">
