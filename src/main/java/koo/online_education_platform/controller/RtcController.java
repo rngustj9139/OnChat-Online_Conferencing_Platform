@@ -15,7 +15,7 @@ public class RtcController {
 
     private final RtcChatService rtcChatService;
 
-    @PostMapping("/webrtc/usercount") // ICE를 위한 chatList 인원 확인 (resources/static/js/rtc/webrtc_client.js 확인)
+    @PostMapping("/webrtc/usercount") // ICE를 위한 chatList 인원 확인 (RTC 채팅방에 인원이 없다면 ICE를 수행하지 않아도 된다) (resources/static/js/rtc/webrtc_client.js 확인)
     public String webRTC(@ModelAttribute WebSocketMessage webSocketMessage) { // HTTP 요청 파라미터가 WebSocketMessage (커스텀) 객체와 같은 파라미터를 갖는다면 자동으로 HTTP 요청 파라미터를 객체에 매핑
         log.info("MESSAGE : {}", webSocketMessage.toString());
 

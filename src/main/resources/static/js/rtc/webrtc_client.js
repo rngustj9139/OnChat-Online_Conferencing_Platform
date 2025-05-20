@@ -1,9 +1,8 @@
-'use strict';
-const addr = "localhost:8443"
+'use strict'; // 엄격한 모드로, 더 안전한 JavaScript 코드를 작성하도록 지원
 
 // create and run Web Socket connection
 // 웹 소켓 연결 정보
-const socket = new WebSocket("wss://" + window.location.host + "/signal");
+const socket = new WebSocket("wss://" + window.location.host + "/signal"); // 초기 연결 정보 교환을 위해 WebSocket 기반의 시그널링 서버 연결을 생성 (wss://localhost:443/signal) (wss: WebSocket Secured)
 
 // UI elements
 const videoButtonOff = document.querySelector('#video_off');
@@ -17,10 +16,8 @@ const remoteVideo = document.getElementById('remote_video');
 // const localUserName = localStorage.getItem("uuid");
 const localUserName = document.querySelector("#uuid").value
 
-
 document.querySelector('#view_on').addEventListener('click', startScreenShare);
 document.querySelector('#view_off').addEventListener('click', stopScreenShare);
-
 
 // WebRTC STUN servers
 // WebRTC STUN 서버 정보
@@ -42,37 +39,37 @@ const mediaConstraints = {
 };
 
 // WebRTC variables
-let localStream;
-let localVideoTracks;
-let myPeerConnection;
+let localStream; // 내 카메라와 마이크에서 받은 전체 미디어 스트림 (비디오 + 오디오)을 담고 있는 객체
+let localVideoTracks; // localStream 중에서 비디오 트랙만 필터링해서 따로 담고 있는 객체
+let myPeerConnection; // 상대방 피어와의 WebRTC 연결을 직접 관리하는 객체입니다. 시그널링, 트랙 전송, ICE 후보 처리 등 연결에 필요한 모든 핵심 기능이 들어 있는 객체
 
 // on page load runner
-$(function(){
+$(function(){ // 페이지 로드시 하기 start() 메서드 실행
     start();
 });
 
 function start() {
     // 페이지 시작시 실행되는 메서드 -> socket 을 통해 server 와 통신한다
-    socket.onmessage = function(msg) {
+    socket.onmessage = function(msg) { // 초기 연결 정보 교환을 위해 WebSocket 기반의 시그널링 서버에서 수신한 메세지 처리
         let message = JSON.parse(msg.data);
         switch (message.type) {
 
-            case "offer":
+            case "offer": // 상대 피어로부터 연결 제안이 왔을 때 처리
                 log('Signal OFFER received');
                 handleOfferMessage(message);
                 break;
 
-            case "answer":
+            case "answer": // 상대 피어가 제안에 응답했을 때 처리
                 log('Signal ANSWER received');
                 handleAnswerMessage(message);
                 break;
 
-            case "ice":
+            case "ice": // ICE 후보 정보를 수신했을 때 처리
                 log('Signal ICE Candidate received');
                 handleNewICECandidateMessage(message);
                 break;
 
-            case "join":
+            case "join": // 방에 참가할 때 처리
                 // ajax 요청을 보내서 userList 를 다시 확인함
                 message.data = chatListCount();
 
@@ -81,7 +78,7 @@ function start() {
                 handlePeerConnection(message);
                 break;
 
-            case "leave":
+            case "leave": // 피어가 방을 떠날 때 처리
                 stop();
                 break;
 
@@ -90,10 +87,8 @@ function start() {
         }
     };
 
-
     // ICE 를 위한 chatList 인원 확인
     function chatListCount(){
-
         let data;
 
         $.ajax({
@@ -111,7 +106,7 @@ function start() {
                 data = result;
             },
             error(result){
-                console.log("error : "+result);
+                console.log("error : " + result);
             }
         });
 
@@ -146,7 +141,7 @@ function start() {
 }
 
 // 브라우저 종료 시 이벤트
-// 그냥...브라우저 종료 시 stop 함수를 부르면 된다ㅠㅠ
+// 브라우저 종료 시 하기 stop 함수를 부르면 된다.
 window.addEventListener('unload', stop);
 
 // 브라우저 뒤로가기 시 이벤트

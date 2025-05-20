@@ -13,7 +13,7 @@ public class WebSocketMessage {
     private String from; // 보내는 유저 UUID
     private String type; // 메시지 타입
     private String data; // roomId
-    private Object candidate; // 상태
+    private Object candidate; // ICE (네트워크 연결 설정) 경로
     /*
      * WebRTC에서는 두 브라우저(혹은 클라이언트)가 영상, 오디오, 데이터 채널로 통신하려면 다음과 같은 정보를 서로 알아야 하고 아래의 모든 정보를 담는 것이 SDP이다.
      * 내가 사용할 코덱 종류 (예: VP8, H264, Opus 등)
