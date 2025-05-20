@@ -96,7 +96,7 @@ public class SignalHandler extends TextWebSocketHandler {
     }
 
     /**
-     *  - 하기 handleTextMessage 메서드는 SockJs에서 전달받은 메시지 (TextMessage)를 수신하는 메서드이다. 해당 메서드를 기준으로 ICE와 SDP 교환이 일어난다.
+     *  - 하기 handleTextMessage 메서드는 SockJs에서 전달받은 메시지 (TextMessage)를 수신하는 메서드이다. 해당 메서드를 기준으로 ICE 작업 수행과 SDP 교환이 일어난다.
      *  - 메서드가 실행되면서 userUUID와 roomID를 저장한다. 이후 전달받은 메시지의 타입에 따라서 시그널링 서버의 기능을 시작한다.
      */
     // 수신 메시지 처리
@@ -111,8 +111,8 @@ public class SignalHandler extends TextWebSocketHandler {
             // 유저 uuid 와 roomID 를 저장
             String userUUID = message.getFrom(); // 유저 uuid
             String roomId = message.getData(); // roomId
-
             ChatRoomDto room;
+
             // 메시지 타입에 따라서 Signaling Server에서 하는 역할이 달라진다
             switch (message.getType()) {
                 // 클라이언트에게서 받은 메시지 타입에 따른 signaling 프로세스
@@ -131,11 +131,10 @@ public class SignalHandler extends TextWebSocketHandler {
                     ChatRoomDto roomDto = rooms.get(roomId);
 
                     if (roomDto != null) {
-                        Map<String, WebSocketSession> clients = rtcChatService.getClients(roomDto);
+                        Map<String, WebSocketSession> clients = rtcChatService.getClients(roomDto); // String은 userUUID를 의미
 
                         /*
                          * Map은 직접적으로 순회 (iteration)가 안 된다. 대신 .entrySet() 메서드를 사용하면 key와 value를 한 쌍으로 묶은 객체들 (Map.Entry<~,~>)을 반환할 수 있다.
-                         * String은 userUUID를 의미
                          * */
                         for (Map.Entry<String, WebSocketSession> client : clients.entrySet())  {
                             // 현재 사용자 자신이 아닌 경우에만 모든 유저에게 메세지 전송
@@ -165,7 +164,7 @@ public class SignalHandler extends TextWebSocketHandler {
                     // 채팅방 입장 후 유저 카운트 + 1
                     chatServiceMain.plusUserCnt(roomId);
 
-                    rooms.put(roomId, room);
+                    rooms.put(roomId, room); // LinkedHashMap은 중복되지 않는 Key를 갖는다. + 방이 처음 생성되는 경우일 수 있기 때문에 put() 메서드 실행
                     break;
                 case MSG_TYPE_LEAVE:
                     // message data contains connected room id
@@ -175,14 +174,13 @@ public class SignalHandler extends TextWebSocketHandler {
                     room = rooms.get(message.getData());
 
                     // room clients list 에서 해당 유저 삭제
-                    // 1. room 에서 client List 를 받아와서 keySet 을 이용해서 key 값만 가져온 후 stream 을 사용해서 반복문 실행
+                    // 1. room에서 client List를 받아와서 keySet을 이용해서 key 값들을 Set 형태로 가져온 후 stream을 사용해서 반복문 실행
                     Optional<String> client = rtcChatService.getClients(room).keySet().stream()
-                            // 2. 이때 filter - 일종의 if문 -을 사용하는데 entry 에서 key 값만 가져와서 userUUID 와 비교한다
-                            .filter(clientListKeys -> StringUtils.equals(clientListKeys, userUUID))
-                            // 3. 하여튼 동일한 것만 가져온다
+                            // 2. 이때 filter (일종의 if)를 사용하는데 key set에서 key 값을 하나씩 가져와서 현재 userUUID와 비교한다
+                            .filter(clientListKey -> StringUtils.equals(clientListKey, userUUID))
                             .findAny();
 
-                    // 만약 client 의 값이 존재한다면 - Optional 임으로 isPersent 사용 , null  아니라면 - removeClientByName 을 실행
+                    // 만약 일치하는 client가 존재한다면 -> Optional이기 때문에 isPersent 사용, 아닌 경우 -> removeClientByName을 실행
                     client.ifPresent(userID -> rtcChatService.removeClientByName(room, userID));
 
                     // 채팅방에서 떠날 시 유저 카운트 - 1
