@@ -19,7 +19,7 @@ public class WebRtcConfig implements WebSocketConfigurer {
 
     private final SignalHandler signalHandler;
 
-    // Signaling 요청이 왔을 때 (/signal url로 요청이 왔을 때) 아래의 WebSockerHandler가 동작하도록 registry에 설정
+    // Signaling 요청이 왔을 때 (/signal url로 요청이 왔을 때) 동작하도록 registry에 설정
     // 요청은 클라이언트 접속, close, 메시지 발송 등에 대한 특정 메서드를 호출이 있다.
     @Override
     public void registerWebSocketHandlers (WebSocketHandlerRegistry registry) {

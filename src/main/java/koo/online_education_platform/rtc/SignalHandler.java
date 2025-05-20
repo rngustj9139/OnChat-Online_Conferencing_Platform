@@ -7,6 +7,7 @@ import koo.online_education_platform.dto.WebSocketMessage;
 import koo.online_education_platform.service.chatService.ChatServiceMain;
 import koo.online_education_platform.service.chatService.RtcChatService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,48 +22,57 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * 시그널 서버 역할을 담당하는 클래스
+ * Signaling Server (WebRTC에서 두 사용자 간의 실시간 통신을 설정하기 위해 필요한 초기 연결 정보를 교환하는 역할을 하는 서버 (누구와 통신하는지 파악하는 것을 돕는 서버, 서로의 IP주소, PORT 주소등을 교환) 역할을 담당하는 클래스
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class SignalHandler extends TextWebSocketHandler {
 
     private final RtcChatService rtcChatService;
     private final ChatServiceMain chatServiceMain;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper(); //  Java 객체와 JSON 간의 변환 (직렬화, 역직렬화)을 담당
 
     // roomID to room Mapping
     private Map<String, ChatRoomDto> rooms = ChatRoomMap.getInstance().getChatRooms();
 
-    // message types, used in signalling:
+    /*
+     SDP: WebRTC에서는 두 브라우저(혹은 클라이언트)가 영상, 오디오, 데이터 채널로 통신하려면 다음과 같은 정보를 서로 알아야 하고, 이 모든 정보를 담는 게 SDP이다.
+	    - 내가 사용할 코덱 종류 (예: VP8, H264, Opus 등)
+	    - 사용할 IP 주소와 포트
+	    - 암호화 방식
+	    - 오디오/비디오 여부
+	    - 해상도/프레임레이트 제한 등
+	 ICE: Peer간의 네트워크 연결 설정을 위한 프레임워크 (네트워크 연결을 위한 다양한 경로(Candidate)를 찾고 연결을 확립)
+     */
+    // Message types, used in signalling:
     // SDP Offer message
     private static final String MSG_TYPE_OFFER = "offer";
     // SDP Answer message
     private static final String MSG_TYPE_ANSWER = "answer";
     // New ICE Candidate message
     private static final String MSG_TYPE_ICE = "ice";
-    // join room data message
+    // Join room data message
     private static final String MSG_TYPE_JOIN = "join";
-    // leave room data message
+    // Leave room data message
     private static final String MSG_TYPE_LEAVE = "leave";
 
-    // 연결 끊어졌을 때 이벤트처리
+    // Signaling Server (WebSocket)의 연결이 끊어졌을 때 이벤트 처리
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        logger.info("[ws] Session has been closed with status [{} {}]", status, session);
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) { // WebSocketSession은 WebSocket 연결을 나타내는 객체
+        log.info("[ws] Session has been closed with status [{} {}]", status, session);
     }
 
-    // 소켓 연결되었을 때 이벤트 처리
+    // Signaling Server (WebSocket)가 연결되었을 때 이벤트 처리
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
+    public void afterConnectionEstablished (WebSocketSession session) {
         /*
-         * 웹 소켓이 연결되었을 때 클라이언트 쪽으로 메시지를 발송한다
-         * 이때 원본 코드에서는 rooms.isEmpty()가 false를 전달한다. 이 의미는 현재 room 에 아무도 없다는 것을 의미하고 따라서 추가적인 ICE 요청을 하지 않도록 한다.
+         * 웹소켓이 연결되었을 때 클라이언트 쪽으로 메시지를 발송한다
+         * 이때 이전 코드에서는 rooms.isEmpty()가 false를 전달한다. 이는 현재 room에 아무도 없다는 것을 의미하고 따라서 추가적인 ICE 요청을 하지 않도록 한다.
          *
-         * 현재 채팅 코드에서는 chatRoom안에 userList안에 user가 저장되기 때문에 rooms이 아닌 userList에 몇명이 있는지 확인해야 했다.
+         * 현재 채팅 코드에서는 chatRoom 내부의 userList 속에 user가 저장되기 때문에 rooms이 아닌 userList에 몇명이 있는지 확인해야 한다.
          * 따라서 js 쪽에서 ajax 요청을 통해 rooms가 아닌 userList에 몇명이 있는지 확인하고
-         * 2명 이상인 경우에만 JS에서 이와 관련된 변수를 true 가 되도록 변경하였다.
+         * 2명 이상인 경우에만 js에서 이와 관련된 변수를 true 가 되도록 변경하였다.
          *
          * 이렇게 true 상태가 되면 이후에 들어온 유저가 방안에 또 다른 유저가 있음을 확인하고,
          * P2P 연결을 시작한다.
@@ -72,15 +82,15 @@ public class SignalHandler extends TextWebSocketHandler {
 
     private void sendMessage(WebSocketSession session, WebSocketMessage message) {
         try {
-            String json = objectMapper.writeValueAsString(message);
+            String json = objectMapper.writeValueAsString(message); // 객체를 JSON 문자열로 변환 (직렬화)
             session.sendMessage(new TextMessage(json));
         } catch (IOException e) {
-            logger.debug("An error occured: {}", e.getMessage());
+            log.debug("An error occured: {}", e.getMessage());
         }
     }
 
     /**
-     *  - 해당 handleTextMessage 메서드는 Socket JS에서 전달받은 메시지를 수신하는 메서드이다. 해당 메서드를 기준으로 ICE 와 SDP 통신이 일어난다.
+     *  - 해당 handleTextMessage 메서드는 SocketJs에서 전달받은 메시지를 수신하는 메서드이다. 해당 메서드를 기준으로 ICE 와 SDP 통신이 일어난다.
      *  - 메서드가 실행되면서 userUUID와 roomID를 저장한다. 이후 전달받은 메시지의 타입에 따라서 시그널링 서버의 기능을 시작한다.
      */
     // 소켓 메시지 처리
@@ -91,7 +101,7 @@ public class SignalHandler extends TextWebSocketHandler {
             // 웹 소켓으로부터 전달받은 메시지
             // 소켓쪽에서는 socket.send 로 메시지를 발송한다 => 참고로 JSON 형식으로 변환해서 전달해온다
             WebSocketMessage message = objectMapper.readValue(textMessage.getPayload(), WebSocketMessage.class);
-            logger.debug("[ws] Message of {} type from {} received", message.getType(), message.getFrom());
+            log.debug("[ws] Message of {} type from {} received", message.getType(), message.getFrom());
             // 유저 uuid 와 roomID 를 저장
             String userUUID = message.getFrom(); // 유저 uuid
             String roomId = message.getData(); // roomId
@@ -109,7 +119,7 @@ public class SignalHandler extends TextWebSocketHandler {
                     Object candidate = message.getCandidate();
                     Object sdp = message.getSdp();
 
-                    logger.debug("[ws] Signal: {}",
+                    log.debug("[ws] Signal: {}",
                             candidate != null
                                     ? candidate.toString().substring(0, 64)
                                     : sdp.toString().substring(0, 64));
@@ -147,7 +157,7 @@ public class SignalHandler extends TextWebSocketHandler {
                 // identify user and their opponent
                 case MSG_TYPE_JOIN:
                     // message.data contains connected room id
-                    logger.debug("[ws] {} has joined Room: #{}", userUUID, message.getData());
+                    log.debug("[ws] {} has joined Room: #{}", userUUID, message.getData());
 
 //                    room = rtcChatService.findRoomByRoomId(roomId)
 //                            .orElseThrow(() -> new IOException("Invalid room number received!"));
@@ -164,7 +174,7 @@ public class SignalHandler extends TextWebSocketHandler {
 
                 case MSG_TYPE_LEAVE:
                     // message data contains connected room id
-                    logger.info("[ws] {} is going to leave Room: #{}", userUUID, message.getData());
+                    log.info("[ws] {} is going to leave Room: #{}", userUUID, message.getData());
 
                     // roomID 기준 채팅방 찾아오기
                     room = rooms.get(message.getData());
@@ -183,17 +193,17 @@ public class SignalHandler extends TextWebSocketHandler {
                     // 채팅방에서 떠날 시 유저 카운트 -1
                     chatServiceMain.minusUserCnt(roomId);
 
-                    logger.debug("삭제 완료 [{}] ",client);
+                    log.debug("삭제 완료 [{}] ",client);
                     break;
 
                 // something should be wrong with the received message, since it's type is unrecognizable
                 default:
-                    logger.debug("[ws] Type of the received message {} is undefined!", message.getType());
+                    log.debug("[ws] Type of the received message {} is undefined!", message.getType());
                     // handle this if needed
             }
 
         } catch (IOException e) {
-            logger.debug("An error occured: {}", e.getMessage());
+            log.debug("An error occured: {}", e.getMessage());
         }
     }
 
