@@ -19,20 +19,20 @@ public class WebRtcConfig implements WebSocketConfigurer {
 
     private final SignalHandler signalHandler;
 
-    // signal 로 요청이 왔을 때 아래의 WebSockerHandler가 동작하도록 registry 에 설정
-    // 요청은 클라이언트 접속, close, 메시지 발송 등에 대해 특정 메서드를 호출한다
+    // Signaling 요청이 왔을 때 (/signal url로 요청이 왔을 때) 아래의 WebSockerHandler가 동작하도록 registry에 설정
+    // 요청은 클라이언트 접속, close, 메시지 발송 등에 대한 특정 메서드를 호출이 있다.
     @Override
     public void registerWebSocketHandlers (WebSocketHandlerRegistry registry) {
         registry.addHandler(signalHandler, "/signal")
                 .setAllowedOrigins("*");
     }
 
-    // 웹 소켓에서 rtc 통신을 위한 최대 텍스트 버퍼와 바이너리 버퍼 사이즈를 설정한다?
+    // WebSocket 세션의 메시지 버퍼 크기를 설정
     @Bean
     public ServletServerContainerFactoryBean createWebSocketContainer () {
         ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
-        container.setMaxTextMessageBufferSize(8192);
-        container.setMaxBinaryMessageBufferSize(8192);
+        container.setMaxTextMessageBufferSize(8192); // 텍스트 메시지의 최대 버퍼 크기를 8192 bytes(8KB)로 지정
+        container.setMaxBinaryMessageBufferSize(8192); // 바이너리 메시지 (예: 파일, 이미지 등)의 최대 크기를 8KB로 지정
 
         return container;
     }
